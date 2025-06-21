@@ -11,7 +11,3 @@ spring:
     jpa:
         hibernate:
             ddl-auto: update 
-
-    mvc:
-        servlet:
-            path: /ToDo/v2
