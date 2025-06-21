@@ -10,8 +10,4 @@ spring:
 
     jpa:
         hibernate:
-            ddl-auto: update 
-
-server:
-    servlet:
-        context-path: /ToDo/v2
+            ddl-auto: update
