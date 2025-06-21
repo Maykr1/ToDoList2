@@ -1,8 +1,11 @@
 package com.ToDoList2.ToDoList2.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -10,7 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Data @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "TODO")
@@ -25,7 +28,8 @@ public class ToDo {
     private String description;
 
     @Column(name="DUEDATE")
-    private Date dueDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dueDate;
 
     @Column(name="COMPLETED")
     private Boolean completed;
