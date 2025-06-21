@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "TODO")
 public class ToDo {
     @Id @GeneratedValue
-    private Long id;
+    private Integer id;
 
     @Column(name="TITLE")
     private String title;

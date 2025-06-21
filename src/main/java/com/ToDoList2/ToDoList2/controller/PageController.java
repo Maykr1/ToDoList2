@@ -46,7 +46,7 @@ public class PageController implements ErrorController {
     
     //Edit item
     @GetMapping("/edit-item/{id}")
-    public String editItem(@PathVariable("id") Long id, Model model) {
+    public String editItem(@PathVariable("id") Integer id, Model model) {
         ToDo selectedItem = toDoService.getToDoById(id);
         
         model.addAttribute("todo", selectedItem);
@@ -54,7 +54,7 @@ public class PageController implements ErrorController {
     }
 
     @PostMapping("/delete-item/{id}")
-    public String deleteItem(@PathVariable("id") Long id) {
+    public String deleteItem(@PathVariable("id") Integer id) {
         toDoService.deleteToDo(id);
 
         return "redirect:/";
