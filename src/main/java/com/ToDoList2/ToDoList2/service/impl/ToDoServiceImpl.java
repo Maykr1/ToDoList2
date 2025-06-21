@@ -30,7 +30,7 @@ public class ToDoServiceImpl implements ToDoService {
     public ToDo getToDoById(Integer id) {
         Optional<ToDo> toDo = this.toDoRepository.findById(id);
         if (!toDo.isPresent()) {
-            throw new ResourceNotFoundException("ToDo not found with id: " + id);
+            throw new ResourceNotFoundException("ToDo not found");
         }
 
         return toDo.get();
@@ -45,7 +45,7 @@ public class ToDoServiceImpl implements ToDoService {
     public ToDo updateToDo(Integer id, ToDo toDo) {
         Optional<ToDo> toDoToUpdateOptional = this.toDoRepository.findById(id);
         if(!toDoToUpdateOptional.isPresent()) {
-            throw new ResourceNotFoundException("ToDo not found with id: " + id);
+            throw new ResourceNotFoundException("ToDo not found");
         }
 
         ToDo toDoToUpdate = toDoToUpdateOptional.get();
@@ -71,7 +71,7 @@ public class ToDoServiceImpl implements ToDoService {
         Optional<ToDo> toDoToDeleteOptional = this.toDoRepository.findById(id);
 
         if (!toDoToDeleteOptional.isPresent()) {
-            throw new ResourceNotFoundException("ToDo not found with id: " + id);
+            throw new ResourceNotFoundException("ToDo not found");
         }
 
         ToDo toDoToDelete = toDoToDeleteOptional.get();
