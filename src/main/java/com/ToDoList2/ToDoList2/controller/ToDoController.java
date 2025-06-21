@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ToDoList2.ToDoList2.entity.ToDo;
+import com.ToDoList2.ToDoList2.exception.ResourceNotFoundException;
 import com.ToDoList2.ToDoList2.service.ToDoService;
 
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,27 +30,44 @@ public class ToDoController {
     private final ToDoService toDoService;
 
     @GetMapping("")
-    public List<ToDo> getAllToDos() {
-        return this.toDoService.getAllToDos();
+    public ResponseEntity<List<ToDo>> getAllToDos() {
+        List<ToDo> toDos = this.toDoService.getAllToDos();
+
+        return new ResponseEntity<>(toDos, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ToDo getToDoById(@PathVariable("id") Long id) {
-        return this.toDoService.getToDoById(id);
+    public ResponseEntity<ToDo> getToDoById(@PathVariable("id") Long id) {
+        ToDo foundToDo = this.toDoService.getToDoById(id);
+
+        return new ResponseEntity<>(foundToDo, HttpStatus.OK);
     }
     
     @PostMapping("")
-    public ToDo createToDo(@RequestBody ToDo toDo) {
-        return this.toDoService.createToDo(toDo);
+    public ResponseEntity<ToDo> createToDo(@RequestBody ToDo toDo) {
+        ToDo createdToDo = this.toDoService.createToDo(toDo);
+
+        return new ResponseEntity<>(createdToDo, HttpStatus.CREATED);
     }
     
     @PutMapping("/{id}")
-    public ToDo updateToDo(@PathVariable("id") Long id, @RequestBody ToDo toDo) {
-        return this.toDoService.updateToDo(id, toDo);
+    public ResponseEntity<ToDo> updateToDo(@PathVariable("id") Long id, @RequestBody ToDo toDo) {
+        ToDo updatedToDo = this.toDoService.updateToDo(id, toDo);
+        
+        return new ResponseEntity<>(updatedToDo, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ToDo deleteToDo(@PathVariable("id") Long id) {
-        return this.toDoService.deleteToDo(id);
+    public ResponseEntity<ToDo> deleteToDo(@PathVariable("id") Long id) {
+        ToDo deletedToDo = this.toDoService.deleteToDo(id);
+
+        return new ResponseEntity<>(deletedToDo, HttpStatus.OK);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<Void> deleteAllToDos() {
+        this.toDoService.deleteAllToDos();
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
