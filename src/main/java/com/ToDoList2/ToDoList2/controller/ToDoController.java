@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/todos")
+@RequestMapping("/ToDo/v2")
 @RequiredArgsConstructor
 public class ToDoController {
     private final ToDoService toDoService;
