@@ -8,26 +8,26 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-// @SpringBootTest
-// @Testcontainers
-// class ToDoList2ApplicationTests {
-// 	@SuppressWarnings("resource")
-// 	@Container
-// 	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.5")
-// 		.withDatabaseName("testdb")
-// 		.withUsername("postgres")
-// 		.withPassword("1234");
+@SpringBootTest
+@Testcontainers
+class ToDoList2ApplicationTests {
+	@SuppressWarnings("resource")
+	@Container
+	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.5")
+		.withDatabaseName("testdb")
+		.withUsername("postgres")
+		.withPassword("1234");
 
-// 	@DynamicPropertySource
-// 	static void overrideProps(DynamicPropertyRegistry registry) {
-// 		registry.add("spring.datasource.url", postgres::getJdbcUrl);
-// 		registry.add("spring.datasource.username", postgres::getUsername);
-// 		registry.add("spring.datasource.password", postgres::getPassword);
-// 	}
+	@DynamicPropertySource
+	static void overrideProps(DynamicPropertyRegistry registry) {
+		registry.add("spring.datasource.url", postgres::getJdbcUrl);
+		registry.add("spring.datasource.username", postgres::getUsername);
+		registry.add("spring.datasource.password", postgres::getPassword);
+	}
 	
 
-// 	@Test
-// 	void contextLoads() {
-// 	}
+	@Test
+	void contextLoads() {
+	}
 
-// }
+}

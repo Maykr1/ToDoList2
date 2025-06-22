@@ -22,7 +22,7 @@ import com.ToDoList2.ToDoList2.service.ToDoService;
 public class PageController implements ErrorController {
     private final ToDoService toDoService;
 
-    @GetMapping("")
+    @GetMapping("/")
     public String home(Model model) {
         Iterable<ToDo> toDoList = this.toDoService.getAllToDos();
 
