@@ -14,13 +14,11 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.ToDoList2.ToDoList2.entity.ToDo;
 import com.ToDoList2.ToDoList2.service.ToDoService;
 
 @Controller
-@RestController
 public class PageController implements ErrorController {
     @Autowired
     private ToDoService toDoService;
