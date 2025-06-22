@@ -14,4 +14,4 @@ spring:
 
 server:
     servlet:
-        context-path: /ToDo/v2
+        context-path: /
