@@ -1,5 +1,7 @@
 package com.ToDoList2.ToDoList2.controller;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -10,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -18,9 +19,9 @@ import com.ToDoList2.ToDoList2.entity.ToDo;
 import com.ToDoList2.ToDoList2.service.ToDoService;
 
 @Controller
-@RequiredArgsConstructor
 public class PageController implements ErrorController {
-    private final ToDoService toDoService;
+    @Autowired
+    private ToDoService toDoService;
 
     @GetMapping("")
     public String home(Model model) {
