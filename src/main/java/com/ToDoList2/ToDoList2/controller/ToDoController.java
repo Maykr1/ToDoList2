@@ -1,6 +1,5 @@
 package com.ToDoList2.ToDoList2.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ToDoList2.ToDoList2.entity.ToDo;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @Slf4j
 @RestController
-@RequestMapping("/")
 @RequiredArgsConstructor
 public class ToDoController {
     private final ToDoService toDoService;
