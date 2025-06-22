@@ -55,3 +55,5 @@ cd ToDoList2
 ```
 
 2. Follow all the steps from **Running Locally** above. In the case that ./mvnw clean package command is denied from running, use the `chmod +x ./mvnw` command
+
+3. In case you need to update it, run `git pull origin main`, and it will autoupdate your files for you.
