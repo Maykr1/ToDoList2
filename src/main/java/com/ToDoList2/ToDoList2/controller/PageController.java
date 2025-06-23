@@ -42,7 +42,7 @@ public class PageController implements ErrorController {
     @PostMapping("/todos")
     public String createToDo(@ModelAttribute("todo") ToDo toDo) {
         toDoService.createToDo(toDo);
-        return "redirect:/"; // send user back
+        return "redirect:/ToDo/v2"; // send user back
     }
     
     //Edit item
@@ -58,13 +58,13 @@ public class PageController implements ErrorController {
     public String deleteItem(@PathVariable("id") Integer id) {
         toDoService.deleteToDo(id);
 
-        return "redirect:/";
+        return "redirect:/ToDo/v2";
     }
 
     @PostMapping("/clear")
     public String deleteAllItems() {
         toDoService.deleteAllToDos();
-        return "redirect:/";
+        return "redirect:/ToDo/v2";
     }
 
     @GetMapping("/error")
