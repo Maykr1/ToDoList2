@@ -29,43 +29,55 @@ public class ToDoController {
 
     @GetMapping("")
     public ResponseEntity<List<ToDo>> getAllToDos() {
+        log.info("[ GET ALL TODOs ] - Inside getAllToDos method call");
         List<ToDo> toDos = this.toDoService.getAllToDos();
 
+        log.info("[ GET ALL TODOs ] - Finished getAllToDos method call");
         return new ResponseEntity<>(toDos, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ToDo> getToDoById(@PathVariable("id") Integer id) {
+        log.info("[ GET TODO BY ID ] - Inside getToDoById method call");
         ToDo foundToDo = this.toDoService.getToDoById(id);
 
+        log.info("[ GET TODO BY ID ] - Finished getToDoById method call");
         return new ResponseEntity<>(foundToDo, HttpStatus.OK);
     }
     
     @PostMapping("")
     public ResponseEntity<ToDo> createToDo(@RequestBody ToDo toDo) {
+        log.info("[ CREATE TODO ] - Inside createToDo method call");
         ToDo createdToDo = this.toDoService.createToDo(toDo);
 
+        log.info("[ CREATE TODO ] - Finished createToDo method call");
         return new ResponseEntity<>(createdToDo, HttpStatus.CREATED);
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<ToDo> updateToDo(@PathVariable("id") Integer id, @RequestBody ToDo toDo) {
+        log.info("[ UPDATE TODO ] - Inside updateToDo method call");
         ToDo updatedToDo = this.toDoService.updateToDo(id, toDo);
         
+        log.info("[ UPDATE TODO ] - Finished updateToDo method call");
         return new ResponseEntity<>(updatedToDo, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ToDo> deleteToDo(@PathVariable("id") Integer id) {
+        log.info("[ DELETE TODO ] - Inside deleteToDo method call");
         ToDo deletedToDo = this.toDoService.deleteToDo(id);
 
+        log.info("[ DELETE TODO ] - Finished deleteToDo method call");
         return new ResponseEntity<>(deletedToDo, HttpStatus.OK);
     }
 
     @DeleteMapping("")
     public ResponseEntity<Void> deleteAllToDos() {
+        log.info("[ DELETE ALL TODOs ] - Inside deleteAllToDos method call");
         this.toDoService.deleteAllToDos();
 
+        log.info("[ DELETE ALL TODOs ] - Finished deleteAllToDos method call");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
