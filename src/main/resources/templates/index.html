@@ -8,7 +8,7 @@
     <link rel="stylesheet" th:href="@{/ToDo/v2/css/style.css}">
     <script th:src="@{/ToDo/v2/js/script.js}"></script>
 </head>
-<body>
+<body data-popup-message="${popupmessage}">
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -26,6 +26,8 @@
         <div class="row">
             <div class="col md-6">
                 <img th:src="@{/ToDo/v2/images/dog.jpg}" alt="Dog" class="img-response center-block">
+
+                <div id="toast-message"></div>
                 
                 <form th:action="@{/ToDo/v2/clear}" method="POST">
                     <button type="submit" class="btn btn-primary">Clear List</button>
