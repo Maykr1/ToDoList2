@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.ToDoList2.ToDoList2.entity.ToDo;
 import com.ToDoList2.ToDoList2.service.ToDoService;
 
+
 @Controller
 public class PageController implements ErrorController {
     @Autowired
@@ -83,4 +84,10 @@ public class PageController implements ErrorController {
 
         return "error";
     }
+
+    @GetMapping("/back-to-portfolio")
+    public String backToPortfolio() {
+        return "redirect::https://ethansclark.com";
+    }
+    
 }
