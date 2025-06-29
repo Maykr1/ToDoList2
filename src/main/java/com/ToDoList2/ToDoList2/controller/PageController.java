@@ -87,7 +87,7 @@ public class PageController implements ErrorController {
 
     @GetMapping("/back-to-portfolio")
     public String backToPortfolio() {
-        return "redirect::https://ethansclark.com";
+        return "redirect://ethansclark.com";
     }
     
 }
