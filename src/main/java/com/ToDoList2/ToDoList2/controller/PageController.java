@@ -1,9 +1,11 @@
 package com.ToDoList2.ToDoList2.controller;
 
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.ToDoList2.ToDoList2.entity.ToDo;
 import com.ToDoList2.ToDoList2.service.ToDoService;
+import com.ToDoList2.ToDoList2.util.UserDetailsUtil;
 
 
 @Controller
@@ -25,8 +28,8 @@ public class PageController implements ErrorController {
     private ToDoService toDoService;
 
     @GetMapping("")
-    public String home(Model model) {
-        Iterable<ToDo> toDoList = this.toDoService.getAllToDos();
+    public String home(Model model, @AuthenticationPrincipal UserDetailsUtil userDetailsUtil) {
+        List<ToDo> toDoList = this.toDoService.getToDosByUsername(userDetailsUtil.getUsername());
 
         model.addAttribute("toDoList", toDoList);
 
@@ -35,15 +38,17 @@ public class PageController implements ErrorController {
 
     @GetMapping("/add-item")
     public String addItem(Model model) {
-        model.addAttribute("todo", new ToDo()); // matches th:object=""
+        model.addAttribute("todo", new ToDo());
         
         return "add-edit-item";
     }
 
     @PostMapping("/todos")
-    public String createToDo(@ModelAttribute("todo") ToDo toDo) {
+    public String createToDo(@ModelAttribute("todo") ToDo toDo, @AuthenticationPrincipal UserDetailsUtil userDetailsUtil) {
+        toDo.setCustomUser(userDetailsUtil.getCustomUser());
+
         toDoService.createToDo(toDo);
-        return "redirect:/"; // send user back
+        return "redirect:/";
     }
     
     //Edit item
@@ -76,7 +81,7 @@ public class PageController implements ErrorController {
             int statusCode = Integer.parseInt(status.toString());
 
             if (statusCode == HttpStatus.NOT_FOUND.value()) {
-                return "error/404"; // this resolves to templates/error/404.html
+                return "error/404";
             } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 return "error/500";
             }
@@ -89,5 +94,4 @@ public class PageController implements ErrorController {
     public String backToPortfolio() {
         return "redirect://ethansclark.com";
     }
-    
 }
