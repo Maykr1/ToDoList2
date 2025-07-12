@@ -1,5 +1,6 @@
 package com.ToDoList2.ToDoList2.service.impl;
 
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -7,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ToDoList2.ToDoList2.entity.CustomUser;
+import com.ToDoList2.ToDoList2.exception.UserAlreadyExistsException;
 import com.ToDoList2.ToDoList2.repository.CustomUserRepository;
 import com.ToDoList2.ToDoList2.service.CustomUserService;
 
