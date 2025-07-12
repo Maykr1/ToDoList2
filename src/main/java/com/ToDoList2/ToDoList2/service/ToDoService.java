@@ -6,6 +6,7 @@ import com.ToDoList2.ToDoList2.entity.ToDo;
 
 public interface ToDoService {
     public List<ToDo> getAllToDos();
+    public List<ToDo> getToDosByUsername(String username);
     public ToDo getToDoById(Integer id);
     public ToDo createToDo(ToDo toDo);
     public ToDo updateToDo(Integer id, ToDo toDo);

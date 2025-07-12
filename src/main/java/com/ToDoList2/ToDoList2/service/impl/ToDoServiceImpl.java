@@ -29,6 +29,15 @@ public class ToDoServiceImpl implements ToDoService {
     }
 
     @Override
+    public List<ToDo> getToDosByUsername(String username) {
+        log.info("[ GET ALL TO DOS BY USERNAME ] - Inside getToDosByUsername method");
+        List<ToDo> toDos = this.toDoRepository.findAllByCustomUserUsername(username);
+
+        log.info(" [ GET ALL TODOS BY USERNAME ] - Finished getToDosByUsername method");
+        return toDos;
+    }
+
+    @Override
     public ToDo getToDoById(Integer id) {
         log.info("[ GET TODO BY ID ] - Inside getToDoById method");
         Optional<ToDo> toDo = this.toDoRepository.findById(id);
