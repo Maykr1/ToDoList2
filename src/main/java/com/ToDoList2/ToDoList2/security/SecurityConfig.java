@@ -23,7 +23,10 @@ public class SecurityConfig {
                 authorize.requestMatchers("/createuser").permitAll();
                 authorize.anyRequest().authenticated();
             })
-            .formLogin(Customizer.withDefaults())
+            .formLogin(form -> {
+                form.defaultSuccessUrl("/", true);
+            }
+            )
             .httpBasic(Customizer.withDefaults()) // Needed for Postman
             .build();
     }
