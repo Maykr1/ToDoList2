@@ -19,6 +19,14 @@
                 <li class="nav-item"><a class="nav-link" th:href="@{/back-to-portfolio}">Home</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/add-item}">Add Item</a></li>
             </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <form th:action="@{/logout}" method="post" style="margin: 8px;">
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
         </div>
     </nav>
     
