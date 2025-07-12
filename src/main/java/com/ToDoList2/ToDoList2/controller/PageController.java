@@ -2,10 +2,10 @@ package com.ToDoList2.ToDoList2.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,22 +14,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.ToDoList2.ToDoList2.entity.ToDo;
+import com.ToDoList2.ToDoList2.service.CustomUserService;
 import com.ToDoList2.ToDoList2.service.ToDoService;
-import com.ToDoList2.ToDoList2.util.UserDetailsUtil;
 
 
 @Controller
+@RequiredArgsConstructor
 public class PageController implements ErrorController {
-    @Autowired
-    private ToDoService toDoService;
+    private final ToDoService toDoService;
+    private final CustomUserService customUserService;
 
     @GetMapping("")
-    public String home(Model model, @AuthenticationPrincipal UserDetailsUtil userDetailsUtil) {
-        List<ToDo> toDoList = this.toDoService.getToDosByUsername(userDetailsUtil.getUsername());
+    public String home(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        List<ToDo> toDoList = this.toDoService.getToDosByUsername(userDetails.getUsername());
 
         model.addAttribute("toDoList", toDoList);
 
@@ -44,8 +46,8 @@ public class PageController implements ErrorController {
     }
 
     @PostMapping("/todos")
-    public String createToDo(@ModelAttribute("todo") ToDo toDo, @AuthenticationPrincipal UserDetailsUtil userDetailsUtil) {
-        toDo.setCustomUser(userDetailsUtil.getCustomUser());
+    public String createToDo(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute("todo") ToDo toDo) {
+        toDo.setCustomUser(customUserService.getCustomUserByUsername(userDetails.getUsername()));
 
         toDoService.createToDo(toDo);
         return "redirect:/";

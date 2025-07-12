@@ -41,6 +41,15 @@ public class CustomUserServiceImpl implements CustomUserService, UserDetailsServ
     }
 
     @Override
+    public CustomUser getCustomUserByUsername(String username) {
+        log.info("[ GET USER BY USERNAME ] - Inside getCustomUserByUsername method");
+        CustomUser foundUser = this.customUserRepository.findByUsername(username);
+
+        log.info("[ GET USER BY USERNAME ] - Finished getCustomUserByUsername method");
+        return foundUser;
+    }
+
+    @Override
     public CustomUser createUser(CustomUser user) {
         log.info("[ CREATE NEW USER ] - Inside createNewUser method");
         CustomUser userAlreadyExists = this.customUserRepository.findByUsername(user.getUsername());
