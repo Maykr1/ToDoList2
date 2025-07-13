@@ -34,6 +34,7 @@ public class PageController implements ErrorController {
         List<ToDo> toDoList = this.toDoService.getToDosByUsername(userDetails.getUsername());
 
         model.addAttribute("toDoList", toDoList);
+        model.addAttribute("username", userDetails.getUsername());
 
         return "index";
     }
