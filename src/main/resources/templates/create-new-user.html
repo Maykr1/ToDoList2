@@ -20,6 +20,8 @@
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item"><a class="nav-link" th:href="@{/back-to-portfolio}">Home</a></li>
                 </ul>
+
+                <a th:href="@{/login}" class="btn btn-success d-flex">Login</a>
             </div>
         </div>
     </nav>
@@ -29,7 +31,7 @@
             <div class="col md-6">
                 <h4 class="fw-bold">Welcome, New User! Please create a new account:</h4>
 
-                <form th:action="@{/createcustomuser}" th:object="${newuser}" method="post" class="form-horizontal">                   
+                <form th:action="@{/createcustomuser}" th:object="${newuser}" method="post" class="form-horizontal mt-4">                   
                     <div class="form-group">
                         <label for="username" class="form-label">Username:</label>
                         <input type="text" id="username" th:field="*{username}" class="form-control"/>
@@ -41,7 +43,7 @@
                         <input type="text" id="password" th:field="*{password}" class="form-control"/>
                         <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                     </div>
-                    
+
                     <div class="text-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 
                     <button type="submit" class="btn btn-primary mt-4">Register</button>

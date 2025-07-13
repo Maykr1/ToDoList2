@@ -52,8 +52,6 @@ public class PageController implements ErrorController {
 
     @PostMapping("/todos")
     public String createToDo(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute("todo") @Valid ToDo toDo, BindingResult result, Model model) {
-        String mode = (toDo.getId() == null) ? "/add-item" : "/edit-item/" + toDo.getId();
-        
         if (result.hasErrors()) {
             return "add-edit-item";
         }
