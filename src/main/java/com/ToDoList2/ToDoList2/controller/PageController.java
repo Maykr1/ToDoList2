@@ -18,10 +18,10 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.ToDoList2.ToDoList2.entity.CustomUser;
 import com.ToDoList2.ToDoList2.entity.ToDo;
 import com.ToDoList2.ToDoList2.service.CustomUserService;
 import com.ToDoList2.ToDoList2.service.ToDoService;
-
 
 @Controller
 @RequiredArgsConstructor
@@ -53,8 +53,7 @@ public class PageController implements ErrorController {
         toDoService.createToDo(toDo);
         return "redirect:/";
     }
-    
-    //Edit item
+
     @GetMapping("/edit-item/{id}")
     public String editItem(@PathVariable("id") Integer id, Model model) {
         ToDo selectedItem = toDoService.getToDoById(id);
@@ -75,6 +74,21 @@ public class PageController implements ErrorController {
         toDoService.deleteAllToDos();
         return "redirect:/";
     }
+
+    @GetMapping("/createnewuser")
+    public String createNewUser(Model model) {
+        model.addAttribute("newuser", new CustomUser());
+
+        return "create-new-user";
+    }
+    
+    @PostMapping("/createcustomuser")
+    public String createCustomUser(@ModelAttribute("customUser") CustomUser customUser) {
+        customUserService.createUser(customUser);
+
+        return "redirect:/";
+    }
+    
 
     @GetMapping("/error")
     public String handleError(HttpServletRequest request) {

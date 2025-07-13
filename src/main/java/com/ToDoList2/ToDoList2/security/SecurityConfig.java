@@ -20,14 +20,20 @@ public class SecurityConfig {
         return httpSecurity
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> {
-                authorize.requestMatchers("/createuser").permitAll();
+                authorize.requestMatchers(
+                    "/createuser", 
+                    "/createnewuser", 
+                    "/createcustomuser",
+                    "/css/**",
+                    "/js/**"
+                ).permitAll();
                 authorize.anyRequest().authenticated();
             })
-            .formLogin(form -> {
-                form.defaultSuccessUrl("/", true);
-            }
+            .formLogin(form -> form
+                .defaultSuccessUrl("/", true)
+                .permitAll()
             )
-            .httpBasic(Customizer.withDefaults()) // Needed for Postman
+            .httpBasic(Customizer.withDefaults())
             .build();
     }
 }
