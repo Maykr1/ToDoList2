@@ -24,12 +24,14 @@ public class SecurityConfig {
                     "/createuser", 
                     "/createnewuser", 
                     "/createcustomuser",
+                    "/login",
                     "/css/**",
                     "/js/**"
                 ).permitAll();
                 authorize.anyRequest().authenticated();
             })
             .formLogin(form -> form
+                .loginPage("/login")
                 .defaultSuccessUrl("/", true)
                 .permitAll()
             )

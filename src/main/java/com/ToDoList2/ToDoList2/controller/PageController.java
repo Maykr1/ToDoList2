@@ -89,6 +89,11 @@ public class PageController implements ErrorController {
         return "redirect:/";
     }
     
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
+    
 
     @GetMapping("/error")
     public String handleError(HttpServletRequest request) {
