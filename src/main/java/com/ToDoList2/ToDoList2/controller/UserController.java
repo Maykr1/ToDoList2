@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ToDoList2.ToDoList2.entity.CustomUser;
 import com.ToDoList2.ToDoList2.service.CustomUserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -17,7 +18,7 @@ public class UserController {
     private final CustomUserService customUserService;
 
     @PostMapping("/createuser")
-    public ResponseEntity<String> createUser(@RequestBody CustomUser user) {
+    public ResponseEntity<String> createUser(@RequestBody @Valid CustomUser user) {
         CustomUser newUser = this.customUserService.createUser(user);
 
         return new ResponseEntity<>("New User Created: " + newUser.toString(), HttpStatus.CREATED);

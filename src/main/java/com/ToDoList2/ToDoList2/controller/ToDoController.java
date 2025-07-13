@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ToDoList2.ToDoList2.entity.ToDo;
 import com.ToDoList2.ToDoList2.service.ToDoService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,7 +47,7 @@ public class ToDoController {
     }
     
     @PostMapping("")
-    public ResponseEntity<ToDo> createToDo(@RequestBody ToDo toDo) {
+    public ResponseEntity<ToDo> createToDo(@RequestBody @Valid ToDo toDo) {
         log.info("[ CREATE TODO ] - Inside createToDo method call");
         ToDo createdToDo = this.toDoService.createToDo(toDo);
 
@@ -55,7 +56,7 @@ public class ToDoController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<ToDo> updateToDo(@PathVariable("id") Integer id, @RequestBody ToDo toDo) {
+    public ResponseEntity<ToDo> updateToDo(@PathVariable("id") Integer id, @RequestBody @Valid ToDo toDo) {
         log.info("[ UPDATE TODO ] - Inside updateToDo method call");
         ToDo updatedToDo = this.toDoService.updateToDo(id, toDo);
         
