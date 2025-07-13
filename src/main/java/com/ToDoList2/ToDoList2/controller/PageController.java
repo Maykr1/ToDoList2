@@ -8,18 +8,22 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.ToDoList2.ToDoList2.entity.CustomUser;
 import com.ToDoList2.ToDoList2.entity.ToDo;
+import com.ToDoList2.ToDoList2.exception.ResourceNotFoundException;
+import com.ToDoList2.ToDoList2.exception.UserAlreadyExistsException;
 import com.ToDoList2.ToDoList2.service.CustomUserService;
 import com.ToDoList2.ToDoList2.service.ToDoService;
 
@@ -47,10 +51,24 @@ public class PageController implements ErrorController {
     }
 
     @PostMapping("/todos")
-    public String createToDo(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute("todo") ToDo toDo) {
-        toDo.setCustomUser(customUserService.getCustomUserByUsername(userDetails.getUsername()));
+    public String createToDo(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute("todo") @Valid ToDo toDo, BindingResult result, Model model) {
+        String mode = (toDo.getId() == null) ? "/add-item" : "/edit-item/" + toDo.getId();
+        
+        if (result.hasErrors()) {
+            return "add-edit-item";
+        }
 
-        toDoService.createToDo(toDo);
+        try {
+            toDo.setCustomUser(customUserService.getCustomUserByUsername(userDetails.getUsername()));
+            toDoService.createToDo(toDo);
+        } catch (ResourceNotFoundException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "add-edit-item";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Something went wrong, please try again.");
+            return "add-edit-item";
+        }
+        
         return "redirect:/";
     }
 
@@ -83,17 +101,28 @@ public class PageController implements ErrorController {
     }
     
     @PostMapping("/createcustomuser")
-    public String createCustomUser(@ModelAttribute("customUser") CustomUser customUser) {
-        customUserService.createUser(customUser);
+    public String createCustomUser(@ModelAttribute("newuser") @Valid CustomUser customUser, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "create-new-user";
+        }
 
-        return "redirect:/";
+        try {
+            customUserService.createUser(customUser);
+        } catch (UserAlreadyExistsException e) {
+            result.rejectValue("username", "error.customUser", e.getMessage());
+            return "create-new-user";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Something went wrong, please try again.");
+            return "create-new-user";
+        }
+
+        return "redirect:/login";
     }
     
     @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
-    
 
     @GetMapping("/error")
     public String handleError(HttpServletRequest request) {

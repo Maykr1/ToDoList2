@@ -19,11 +19,10 @@
             <div class="collapse navbar-collapse" id ="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item"><a class="nav-link" th:href="@{/back-to-portfolio}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/add-item}">Add Item</a></li>
                 </ul>
 
                 <form th:action="@{/logout}" method="post" class="d-flex">
-                    <button type="submit" class="btn btn-danger">Logout</button>
+                    <button type="submit" class="btn btn-info">Logout</button>
                 </form>
             </div>
         </div>
@@ -33,10 +32,14 @@
         <div class="row">
             <div class="col md-6">
                 <h4 class="fw-bold" th:text="'Welcome, ' + ${username} + '!'">Welcome, user!</h4>
-                
-                <form th:action="@{/clear}" method="POST" class="mt-4">
-                    <button type="submit" class="btn btn-primary">Clear List</button>
-                </form>
+
+                <div class="d-flex gap-2 mt-4">
+                    <a th:href="@{/add-item}" class="btn btn-success">Add Item</a>
+
+                    <form th:action="@{/clear}" method="POST">
+                        <button type="submit" class="btn btn-danger">Clear List</button>
+                    </form>
+                </div>
 
                 <table class="table table-response table-bordered mt-2">
                     <thead>

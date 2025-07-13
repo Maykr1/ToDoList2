@@ -19,11 +19,10 @@
             <div class="collapse navbar-collapse" id ="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item"><a class="nav-link" th:href="@{/back-to-portfolio}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" th:href="@{/add-item}">Add Item</a></li>
                 </ul>
 
                 <form th:action="@{/logout}" method="post" class="d-flex">
-                    <button type="submit" class="btn btn-danger">Logout</button>
+                    <button type="submit" class="btn btn-info">Logout</button>
                 </form>
             </div>
         </div>
@@ -37,7 +36,8 @@
                     
                     <div class="form-group">
                         <label for="title" class="form-label">Title:</label>
-                        <input type="text" id="title" th:field="*{title}" class="form-control" required/>
+                        <input type="text" id="title" th:field="*{title}" class="form-control"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
                     </div>
 
                     <div class="form-group">
@@ -47,7 +47,8 @@
 
                     <div class="form-group">
                         <label for="date" class="form-label">Due Date:</label>
-                        <input type="date" id="date" th:field="*{dueDate}" class="form-control" required/>
+                        <input type="date" id="date" th:field="*{dueDate}" class="form-control"/>
+                        <div class="text-danger" th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}"></div>
                     </div>
 
                     <div class="form-group">
