@@ -1,36 +1,45 @@
 package com.ToDoList2.ToDoList2.controller;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import com.ToDoList2.ToDoList2.entity.ToDo;
+import com.ToDoList2.ToDoList2.exception.ResourceNotFoundException;
 import com.ToDoList2.ToDoList2.service.ToDoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(ToDoController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class ToDoControllerTest {
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
     private ToDoService toDoService;
-    
-    @InjectMocks
-    private ToDoController toDoController;
 
     ResponseEntity<ToDo> response;
     ToDo toDo;
+
 
     @BeforeEach
     public void setup() {
@@ -44,66 +53,114 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testGetAllToDos() {
-        ResponseEntity<List<ToDo>> toDos = this.toDoController.getAllToDos();
+    public void testGetAllToDos() throws JsonProcessingException, Exception {
+        List<ToDo> allToDos = new ArrayList<>();
+        allToDos.add(toDo);
         
-        assertEquals(toDos.getStatusCode(), HttpStatus.OK);
+        when(toDoService.getAllToDos()).thenReturn(allToDos);
+        
+        mockMvc.perform(get("/ToDo/v2"))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectMapper.writeValueAsString(allToDos)));
         
         verify(toDoService).getAllToDos();
     }
 
     @Test
-    public void testGetToDoById() {
-        when(toDoService.getToDoById(anyInt())).thenReturn(toDo);
+    public void testGetToDoById() throws JsonProcessingException, Exception {
+        when(toDoService.getToDoById(1)).thenReturn(toDo);
 
-        response = toDoController.getToDoById(1);
+        mockMvc.perform(get("/ToDo/v2/1"))
+            .andExpect(status().isOk())
+            .andExpect(content().json(objectMapper.writeValueAsString(toDo)));
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(toDo, response.getBody());
-        verify(toDoService).getToDoById(anyInt());
+        verify(toDoService).getToDoById(1);
     }
 
     @Test
-    public void testCreateToDo() {
+    public void testGetToDoByIdNull() throws JsonProcessingException, Exception {
+        when(toDoService.getToDoById(1))
+            .thenThrow(new ResourceNotFoundException("ToDo not found"));
+        
+        mockMvc.perform(get("/ToDo/v2/1"))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("ToDo not found"));
+
+        verify(toDoService).getToDoById(1);
+    }
+
+    @Test
+    public void testCreateToDo() throws JsonProcessingException, Exception {
         when(toDoService.createToDo(toDo)).thenReturn(toDo);
 
-        response = toDoController.createToDo(toDo);
+        mockMvc.perform(post("/ToDo/v2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(toDo)))
+            .andExpect(status().isCreated())
+            .andExpect(content().string(objectMapper.writeValueAsString(toDo)));
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(toDo, response.getBody());
         verify(toDoService).createToDo(toDo);
     }
 
     @Test
-    public void testUpdateToDo() {
+    public void testUpdateToDo() throws JsonProcessingException, Exception {
         toDo.setCompleted(true);
-        when(toDoService.updateToDo(1, toDo)).thenReturn(toDo);
 
-        response = toDoController.updateToDo(1, toDo);
+        when(toDoService.updateToDo(1, toDo)).thenReturn(toDo);
+                
+        mockMvc.perform(put("/ToDo/v2/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(toDo)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(objectMapper.writeValueAsString(toDo)));
         
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(toDo, response.getBody());
-        assertEquals(toDo.getCompleted(), true);
         verify(toDoService).updateToDo(1, toDo);
     }
 
     @Test
-    public void testDeleteToDo() {
-        when(toDoService.deleteToDo(anyInt())).thenReturn(toDo);
-        
-        response = toDoController.deleteToDo(1);
+    public void testUpdateToDoNotFound() throws JsonProcessingException, Exception {
+        toDo.setId(1234);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(toDo, response.getBody());
-        verify(toDoService).deleteToDo(anyInt());
+        when(toDoService.updateToDo(1, toDo))
+            .thenThrow(new ResourceNotFoundException("ToDo not found"));
+
+        mockMvc.perform(put("/ToDo/v2/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(toDo)))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("ToDo not found"));
+
+        verify(toDoService).updateToDo(1, toDo);
     }
 
     @Test
-    public void testDeleteAllToDos() {
-        ResponseEntity<Void> responseDeleteAllToDos = toDoController.deleteAllToDos();
+    public void testDeleteToDo() throws JsonProcessingException, Exception {
+        when(toDoService.deleteToDo(1)).thenReturn(toDo);
+
+        mockMvc.perform(delete("/ToDo/v2/1"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(objectMapper.writeValueAsString(toDo)));
         
-        assertEquals(HttpStatus.NO_CONTENT, responseDeleteAllToDos.getStatusCode());
-        assertNull(responseDeleteAllToDos.getBody());
-        verify(toDoService).deleteAllToDos();
+        verify(toDoService).deleteToDo(1);
+    }
+
+    @Test
+    public void testDeleteToDoNotFound() throws JsonProcessingException, Exception {
+        toDo.setId(1231241231);
+
+        when(toDoService.deleteToDo(1))
+            .thenThrow(new ResourceNotFoundException("ToDo not found"));
+
+        mockMvc.perform(delete("/ToDo/v2/1"))
+            .andExpect(status().isNotFound())
+            .andExpect(content().string("ToDo not found"));
+        
+        verify(toDoService).deleteToDo(1);
+    }
+
+    @Test
+    public void testDeleteAllToDos() throws JsonProcessingException, Exception {
+        mockMvc.perform(delete("/ToDo/v2"))
+            .andExpect(status().isNoContent());
     }
 }
