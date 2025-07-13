@@ -45,6 +45,7 @@ public class PageController implements ErrorController {
 
     @GetMapping("/add-item")
     public String addItem(Model model) {
+        model.addAttribute("mode", "Add");
         model.addAttribute("todo", new ToDo());
         
         return "add-edit-item";
@@ -52,7 +53,10 @@ public class PageController implements ErrorController {
 
     @PostMapping("/todos")
     public String createToDo(@AuthenticationPrincipal UserDetails userDetails, @ModelAttribute("todo") @Valid ToDo toDo, BindingResult result, Model model) {
+        String mode = (toDo.getId() == null) ? "Add" : "Edit";
+        
         if (result.hasErrors()) {
+            model.addAttribute("mode", mode);
             return "add-edit-item";
         }
 
@@ -61,9 +65,11 @@ public class PageController implements ErrorController {
             toDoService.createToDo(toDo);
         } catch (ResourceNotFoundException e) {
             model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("mode", mode);
             return "add-edit-item";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Something went wrong, please try again.");
+            model.addAttribute("mode", mode);
             return "add-edit-item";
         }
         
@@ -74,6 +80,7 @@ public class PageController implements ErrorController {
     public String editItem(@PathVariable("id") Integer id, Model model) {
         ToDo selectedItem = toDoService.getToDoById(id);
         
+        model.addAttribute("mode", "Edit");
         model.addAttribute("todo", selectedItem);
         return "add-edit-item";
     }
