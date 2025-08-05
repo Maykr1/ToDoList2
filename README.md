@@ -1,7 +1,7 @@
 # ToDoList2
 
 ## Description
-This is my second iteration of a ToDoList. I would like to note that I did not choose to use docker-compose due to the fact that it's performance is worse than just running the containers separately. This is currently running under my website, www.ethansclark.com/ToDo/v2, which is also running on my home server. However, I do not have any plans to make this appear public on my website as it originated from outdated code. I'd like to start on a new project instead.
+This is my second iteration of a ToDoList. I would like to note that it is currently running in Docker Compose, but this may change in the future.
 
 ## Technologies
 - Java
