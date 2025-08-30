@@ -1,7 +1,7 @@
 # ToDoList2
 
 ## Description
-This is my second iteration of a ToDoList. I would like to note that it is currently not running in Docker Compose, but this may change in the future. You can visit this website at [todo.ethansclark.com](todo.ethansclark.com)
+This is my second iteration of a ToDoList. I would like to note that it is currently not running in Docker Compose, but this may change in the future. You can visit this website at todo.ethansclark.com
 
 ## Technologies
 - Java
