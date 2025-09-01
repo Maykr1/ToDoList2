@@ -2,7 +2,9 @@ FROM openjdk:21
 
 WORKDIR /app
 
-COPY target/ToDoList2-0.0.1-SNAPSHOT.jar app.jar
+ARG JAR_FILE
+
+COPY ${JAR_FILE} app.jar
 
 EXPOSE 8080:8080
 
