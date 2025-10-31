@@ -1,5 +1,6 @@
 package com.ToDoList2.ToDoList2.service.impl;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,17 +26,12 @@ public class CustomUserServiceImpl implements CustomUserService, UserDetailsServ
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("[ GET USER BY USERNAME ] - Inside loadUserByUsername method");
-        CustomUser foundUser = null;
-
-        try {
-            foundUser = this.customUserRepository.findByUsername(username);
-        } catch (UsernameNotFoundException e) {
-            log.error("[UsernameNotFoundException] - Error occured: ", e.getMessage(), e);
-        }
+        
+        CustomUser foundUser = this.customUserRepository.findByUsername(username);
         
         if (foundUser == null) {
             log.error("[ GET USER BY USERNAME ] - User with username: {} does not exist", username);
-            throw new UsernameNotFoundException("User does not exist");
+            throw new BadCredentialsException("User does not exist");
         }
 
         log.info("[ GET USER BY USERNAME ] - Finished loadUserByUsername method");
@@ -48,17 +44,11 @@ public class CustomUserServiceImpl implements CustomUserService, UserDetailsServ
     @Override
     public CustomUser getCustomUserByUsername(String username) {
         log.info("[ GET CUSTOM USER BY USERNAME ] - Inside getCustomUserByUsername method");
-        CustomUser foundUser = null;
+        CustomUser foundUser = this.customUserRepository.findByUsername(username);
 
-        try {
-            foundUser = this.customUserRepository.findByUsername(username);
-        } catch (UsernameNotFoundException e) {
-            log.error("[UsernameNotFoundException] - Error occured: ", e.getMessage(), e);
-        }
-        
         if (foundUser == null) {
             log.error("[ GET CUSTOM USER BY USERNAME ] - User with username: {} does not exist", username);
-            throw new UsernameNotFoundException("User does not exist");
+            throw new BadCredentialsException("User does not exist");
         }
 
         log.info("[ GET CUSTOM USER BY USERNAME ] - Finished getCustomUserByUsername method");
