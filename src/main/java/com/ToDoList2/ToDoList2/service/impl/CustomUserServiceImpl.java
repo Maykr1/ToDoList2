@@ -25,8 +25,13 @@ public class CustomUserServiceImpl implements CustomUserService, UserDetailsServ
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("[ GET USER BY USERNAME ] - Inside loadUserByUsername method");
-        
-        CustomUser foundUser = this.customUserRepository.findByUsername(username);
+        CustomUser foundUser = null;
+
+        try {
+            foundUser = this.customUserRepository.findByUsername(username);
+        } catch (UsernameNotFoundException e) {
+            log.error("[UsernameNotFoundException] - Error occured: ", e.getMessage(), e);
+        }
         
         if (foundUser == null) {
             log.error("[ GET USER BY USERNAME ] - User with username: {} does not exist", username);
@@ -43,8 +48,14 @@ public class CustomUserServiceImpl implements CustomUserService, UserDetailsServ
     @Override
     public CustomUser getCustomUserByUsername(String username) {
         log.info("[ GET CUSTOM USER BY USERNAME ] - Inside getCustomUserByUsername method");
-        CustomUser foundUser = this.customUserRepository.findByUsername(username);
+        CustomUser foundUser = null;
 
+        try {
+            foundUser = this.customUserRepository.findByUsername(username);
+        } catch (UsernameNotFoundException e) {
+            log.error("[UsernameNotFoundException] - Error occured: ", e.getMessage(), e);
+        }
+        
         if (foundUser == null) {
             log.error("[ GET CUSTOM USER BY USERNAME ] - User with username: {} does not exist", username);
             throw new UsernameNotFoundException("User does not exist");
