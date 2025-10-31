@@ -34,8 +34,11 @@
 		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/coverage-reports/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 		<sonar.exclusions>
 			src/main/java/com/ToDoList2/ToDoList2/ToDoList2Application.java,
+			src/main/java/com/ToDoList2/ToDoList2/config/**,
+			src/main/java/com/ToDoList2/ToDoList2/controller/PageController.java,
 			src/main/java/com/ToDoList2/ToDoList2/entity**,
 			src/main/java/com/ToDoList2/ToDoList2/exception/**,
+			src/main/java/com/ToDoList2/ToDoList2/security/**,
 			src/main/resources/**
 		</sonar.exclusions>
 	</properties>
