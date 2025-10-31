@@ -8,7 +8,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@SpringBootTest(properties = "spring.testcontainers.enabled=false")
+@SpringBootTest
 @Testcontainers
 class ToDoList2ApplicationTests {
 	@SuppressWarnings("resource")
