@@ -19,7 +19,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import com.ToDoList2.ToDoList2.entity.CustomUser;
 import com.ToDoList2.ToDoList2.service.CustomUserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(CustomUserController.class)
@@ -49,7 +48,7 @@ public class CustomUserControllerTest {
     }
 
     @Test
-    public void createUser() throws JsonProcessingException, Exception {
+    void createUser() throws Exception {
         when(customUserService.createUser(any(CustomUser.class))).thenReturn(customUser);
 
         mockMvc.perform(post("/ToDo/v2/createuser")
@@ -61,7 +60,7 @@ public class CustomUserControllerTest {
     }
 
     @Test
-    public void createUserAlreadyExists() throws JsonProcessingException, Exception {
+    void createUserAlreadyExists() throws Exception {
         when(customUserService.createUser(any(CustomUser.class)))
             .thenThrow(new UsernameNotFoundException("User does not exist"));
 

@@ -39,7 +39,8 @@
 			src/main/java/com/ToDoList2/ToDoList2/entity**,
 			src/main/java/com/ToDoList2/ToDoList2/exception/**,
 			src/main/java/com/ToDoList2/ToDoList2/security/**,
-			src/main/resources/**
+			src/main/resources/**,
+			src/main/java/com/ToDoList2/ToDoList2/ToDoList2ApplicationTests.java,
 		</sonar.exclusions>
 	</properties>
 	<dependencies>

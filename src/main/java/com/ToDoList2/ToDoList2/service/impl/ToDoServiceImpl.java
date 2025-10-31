@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.ToDoList2.ToDoList2.constants.ToDoConstants;
 import com.ToDoList2.ToDoList2.entity.ToDo;
 import com.ToDoList2.ToDoList2.exception.ResourceNotFoundException;
 import com.ToDoList2.ToDoList2.repository.ToDoRepository;
@@ -44,7 +45,7 @@ public class ToDoServiceImpl implements ToDoService {
         
         if (!toDo.isPresent()) {
             log.error("[ GET TODO BY ID] - No ToDo found correspoding with id: {}", id);
-            throw new ResourceNotFoundException("ToDo not found");
+            throw new ResourceNotFoundException(ToDoConstants.ToDoNotFound);
         }
 
         ToDo toDoToGet = toDo.get();
@@ -69,7 +70,7 @@ public class ToDoServiceImpl implements ToDoService {
 
         if(!toDoToUpdateOptional.isPresent()) {
             log.error("[ GET TODO BY ID] - No ToDo found correspoding with id: {}", id);
-            throw new ResourceNotFoundException("ToDo not found");
+            throw new ResourceNotFoundException(ToDoConstants.ToDoNotFound);
         }
 
         ToDo toDoToUpdate = toDoToUpdateOptional.get();
@@ -97,7 +98,7 @@ public class ToDoServiceImpl implements ToDoService {
         Optional<ToDo> toDoToDeleteOptional = this.toDoRepository.findById(id);
 
         if (!toDoToDeleteOptional.isPresent()) {
-            throw new ResourceNotFoundException("ToDo not found");
+            throw new ResourceNotFoundException(ToDoConstants.ToDoNotFound);
         }
 
         ToDo toDoToDelete = toDoToDeleteOptional.get();
