@@ -4,71 +4,82 @@ pipeline {
 
     environment {
         // --- APP ---
-        GROUP_ID        = 'com.project'
-        ARTIFACT_ID     = 'traveling-sales-person'
-        BASE_VERSION    = '0.0.1-SNAPSHOT'
+        APP_NAME        = 'todolist2'
 
-        // --- NEXUS ---
-        NEXUS           = credentials('nexus-deploy')
-        NEXUS_BASE      = 'https://nexus.ethansclark.com'
-        REPOSITORY      = 'maven-snapshots'
-        SNAPSHOT_API    = "${NEXUS_BASE}/service/rest/v1/search/assets"
+        // --- DOCKER ---
+        COMPOSE_DIR     = '/deploy'
+        DOCKER_REG      = 'localhost:8003'
+        DOCKER_REPO     = 'repository/docker-apps'
+        IMAGE_TAG       = 'latest'
+        IMAGE           = "${DOCKER_REG}/${APP_NAME}:${IMAGE_TAG}"
+        REG_CRED_ID     = 'nexus-deploy'
+    }
 
-        // --- REMOTE ---
-        REMOTE_HOST     = 'eclarkserver'
-        REMOTE_ROOT     = '/home/eclark/projects/eclarkCICDInfrastructure'
-        REMOTE_APP_DIR  = '/home/eclark/projects/TravelingSalesPerson'
-        SSH_CRED_ID     = 'home-server-ssh'
-        
-        // --- Cloudflare ---
-        CF_ACCESS_CLIENT_ID     = credentials('cf-access-client-id')
-        CF_ACCESS_CLIENT_SECRET = credentials('cf-access-client-secret')
+    parameters{
+        choice(name: 'CLEANUP',
+            choices: ['none', 'dangling', 'all'],
+            description: 'Choose how aggressively to prune docker containers, volumes, etc.'
+        )
     }
 
     stages {
-        stage('Fetch newest SNAPSHOT JAR from Nexus') {
+        stage('Login to Registry') {
             steps {
-                sh '''
-                set -euo pipefail
-                rm -rf deploy && mkdir -p deploy
-                echo "Resolving latest JAR for ${GROUP_ID}:${ARTIFACT_ID}:${BASE_VERSION}"
-
-                curl -sS -u "${NEXUS_USR}:${NEXUS_PSW}" \
-                "${SNAPSHOT_API}?repository=${REPOSITORY}&sort=version&direction=desc&maven.groupId=${GROUP_ID}&maven.artifactId=${ARTIFACT_ID}&maven.baseVersion=${BASE_VERSION}" \
-                > deploy/nexus.json
-
-                JAR_URL=$(jq -r '.items[] | select(.path | endswith(".jar")) | .downloadUrl' deploy/nexus.json | head -n 1)
-                test -n "$JAR_URL" && test "$JAR_URL" != "null" || { echo "Could not resolve JAR"; exit 1; }
-                echo "Latest JAR: $JAR_URL"
-
-                curl -fSL -u "${NEXUS_USR}:${NEXUS_PSW}" "$JAR_URL" -o deploy/app.jar
-                ls -lh deploy/app.jar
-                '''
-            }
-        }
-
-        stage('Copy JAR & Compose Up (build)') {
-            steps {
-                sshagent(credentials: [env.SSH_CRED_ID]) {
-                sh '''
-                set -euo pipefail
-                ssh -o StrictHostKeyChecking=no "${REMOTE_HOST}" "mkdir -p '${REMOTE_APP_DIR}'"
-                scp -o StrictHostKeyChecking=no deploy/app.jar "${REMOTE_HOST}":"${REMOTE_APP_DIR}/app.jar"
-
-                ssh -o StrictHostKeyChecking=no "${REMOTE_HOST}" \
-                "cd '${REMOTE_ROOT}' && docker compose up -d --build traveling-sales-person"
-                '''
+                withCredentials([usernamePassword(credentialsId: env.REG_CRED_ID, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
+                    sh '''
+                        echo "[INFO] Logging into Docker registry ${DOCKER_REG}..."
+                        echo "${DOCKER_PSW}" | docker login "${DOCKER_REG}" -u "${DOCKER_USR}" --password-stdin
+                    '''
                 }
             }
         }
+
+        stage('Deploy latest image') {
+            steps {
+                sh '''
+                    echo "[INFO] Deploying ${IMAGE}"
+
+                    cd "${COMPOSE_DIR}"
+                    TSP_TAG="${IMAGE_TAG}" docker compose pull ${APP_NAME}
+                    TSP_TAG="${IMAGE_TAG}" docker compose up -d --no-build --remove-orphans ${APP_NAME}
+                '''
+            }
+        }
+
+        stage('Cleanup') {
+            when { expression { return params.PRUNE_MODE != 'none' } }
+            steps {
+                sh '''
+                    echo "[INFO] Prune mode: ${PRUNE_MODE}"
+
+                    if [ "${PRUNE_MODE}" = "all" ]; then
+                        docker system prune -a
+                    elif [ "${PRUNE_MODE}" = "dangling" ]; then
+                        docker image prune -f
+                        docker container prune -f
+                        docker network prune -f
+                    fi
+                '''
+            }
+        }
+
+        stage('Logout') {
+            steps{
+                sh '''
+                    docker logout "${DOCKER_REG}" || true
+                '''
+            }
+        }
+        
     }
 
     post {
-        success {
-            echo 'Deployment complete ✅'
+        success { 
+            echo "✅ Successfully deployed latest ${APP_NAME} image" 
         }
-        failure {
-            echo 'Deployment failed ❌'
+
+        failure { 
+            echo "❌ Deployment failed for ${APP_NAME}" 
         }
     }
 }
