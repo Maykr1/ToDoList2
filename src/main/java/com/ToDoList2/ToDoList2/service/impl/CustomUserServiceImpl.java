@@ -1,5 +1,6 @@
 package com.ToDoList2.ToDoList2.service.impl;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,7 +31,7 @@ public class CustomUserServiceImpl implements CustomUserService, UserDetailsServ
         
         if (foundUser == null) {
             log.error("[ GET USER BY USERNAME ] - User with username: {} does not exist", username);
-            throw new UsernameNotFoundException("User does not exist");
+            throw new BadCredentialsException("User does not exist");
         }
 
         log.info("[ GET USER BY USERNAME ] - Finished loadUserByUsername method");
@@ -47,7 +48,7 @@ public class CustomUserServiceImpl implements CustomUserService, UserDetailsServ
 
         if (foundUser == null) {
             log.error("[ GET CUSTOM USER BY USERNAME ] - User with username: {} does not exist", username);
-            throw new UsernameNotFoundException("User does not exist");
+            throw new BadCredentialsException("User does not exist");
         }
 
         log.info("[ GET CUSTOM USER BY USERNAME ] - Finished getCustomUserByUsername method");

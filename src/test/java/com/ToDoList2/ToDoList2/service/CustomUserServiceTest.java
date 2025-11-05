@@ -13,8 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.ToDoList2.ToDoList2.entity.CustomUser;
@@ -46,7 +46,7 @@ public class CustomUserServiceTest {
     }
 
     @Test
-    public void loadUserByUsername() {
+    void loadUserByUsername() {
         when(customUserRepository.findByUsername(customUser.getUsername())).thenReturn(customUser);
 
         UserDetails userDetails = customUserServiceImpl.loadUserByUsername(customUser.getUsername());
@@ -59,11 +59,11 @@ public class CustomUserServiceTest {
     }
 
     @Test
-    public void loadUserByUsernameNull() {
+    void loadUserByUsernameNull() {
         when(customUserRepository.findByUsername(customUser.getUsername())).thenReturn(null);
 
         assertThrows(
-            UsernameNotFoundException.class, 
+            BadCredentialsException.class, 
             () -> customUserServiceImpl.loadUserByUsername(customUser.getUsername())
         );
 
@@ -71,7 +71,7 @@ public class CustomUserServiceTest {
     }
 
     @Test
-    public void loadCustomUserByUsername() {
+    void loadCustomUserByUsername() {
         when(customUserRepository.findByUsername(customUser.getUsername())).thenReturn(customUser);
 
         CustomUser foundUser = customUserServiceImpl.getCustomUserByUsername(customUser.getUsername());
@@ -84,11 +84,11 @@ public class CustomUserServiceTest {
     }
 
     @Test
-    public void loadCustomUserByUsernameNull() {
+    void loadCustomUserByUsernameNull() {
         when(customUserRepository.findByUsername(customUser.getUsername())).thenReturn(null);
 
         assertThrows(
-            UsernameNotFoundException.class, 
+            BadCredentialsException.class, 
             () -> customUserServiceImpl.getCustomUserByUsername(customUser.getUsername())
         );
 
@@ -96,7 +96,7 @@ public class CustomUserServiceTest {
     }
 
     @Test
-    public void createUser() {
+    void createUser() {
         when(customUserRepository.findByUsername(customUser.getUsername())).thenReturn(null);
         when(passwordEncoder.encode(customUser.getPassword())).thenReturn("encodedPassword");
         when(customUserRepository.save(customUser)).thenReturn(customUser);
@@ -111,7 +111,7 @@ public class CustomUserServiceTest {
     }
 
     @Test
-    public void createUserAlreadyExists() {
+    void createUserAlreadyExists() {
         when(customUserRepository.findByUsername(customUser.getUsername())).thenReturn(customUser);
 
         assertThrows(

@@ -47,7 +47,7 @@ public class ToDoServiceTest {
     }
 
     @Test
-    public void testGetAllToDos() {
+    void testGetAllToDos() {
         List<ToDo> toDos = this.toDoServiceImpl.getAllToDos();
 
         assertNotNull(toDos);
@@ -55,7 +55,7 @@ public class ToDoServiceTest {
     }
 
     @Test
-    public void testGetToDoById() {
+    void testGetToDoById() {
         when(toDoRepository.findById(toDo.getId())).thenReturn(Optional.of(toDo));
 
         response = toDoServiceImpl.getToDoById(toDo.getId());
@@ -65,7 +65,7 @@ public class ToDoServiceTest {
     }
 
     @Test
-    public void testGetToDoByIdNull() {
+    void testGetToDoByIdNull() {
         toDo.setId(123);
         
         when(toDoRepository.findById(anyInt())).thenReturn(Optional.empty());
@@ -75,12 +75,12 @@ public class ToDoServiceTest {
             () -> toDoServiceImpl.getToDoById(1)
         );
 
-        assertEquals(e.getMessage(), "ToDo not found");
+        assertEquals("ToDo not found", e.getMessage());
         verify(toDoRepository).findById(1);
     }
 
     @Test
-    public void testCreateToDo() {
+    void testCreateToDo() {
         when(toDoRepository.save(toDo)).thenReturn(toDo);
 
         response = toDoServiceImpl.createToDo(toDo);
@@ -90,7 +90,7 @@ public class ToDoServiceTest {
     }
 
     @Test
-    public void testUpdateToDo() {
+    void testUpdateToDo() {
         toDo.setCompleted(true);
 
         when(toDoRepository.findById(toDo.getId())).thenReturn(Optional.of(toDo));
@@ -99,13 +99,13 @@ public class ToDoServiceTest {
         response = toDoServiceImpl.updateToDo(toDo.getId(), toDo);
         
         assertEquals(toDo, response);
-        assertEquals(toDo.getCompleted(), true);
+        assertEquals(true, toDo.getCompleted());
         verify(toDoRepository).findById(1);
         verify(toDoRepository).save(toDo);
     }
 
     @Test
-    public void testUpdateToDoNull() {
+    void testUpdateToDoNull() {
         toDo.setId(123);
         toDo.setCompleted(true);
         
@@ -116,13 +116,13 @@ public class ToDoServiceTest {
             () -> toDoServiceImpl.updateToDo(1, toDo)
         );
 
-        assertEquals(e.getMessage(), "ToDo not found");
+        assertEquals("ToDo not found", e.getMessage());
         verify(toDoRepository).findById(1);
         verify(toDoRepository, never()).save(toDo);
     }
 
     @Test
-    public void testDeleteToDo() {
+    void testDeleteToDo() {
         when(toDoRepository.findById(toDo.getId())).thenReturn(Optional.of(toDo));
 
         response = toDoServiceImpl.deleteToDo(toDo.getId());
@@ -133,7 +133,7 @@ public class ToDoServiceTest {
     }
 
     @Test
-    public void testDeleteToDoNull() {
+    void testDeleteToDoNull() {
         toDo.setId(123);
         
         when(toDoRepository.findById(anyInt())).thenReturn(Optional.empty());
@@ -143,13 +143,13 @@ public class ToDoServiceTest {
             () -> toDoServiceImpl.deleteToDo(1)
         );
 
-        assertEquals(e.getMessage(), "ToDo not found");
+        assertEquals("ToDo not found", e.getMessage());
         verify(toDoRepository).findById(1);
         verify(toDoRepository, never()).delete(toDo);
     }
 
     @Test
-    public void testDeleteAllToDos() {
+    void testDeleteAllToDos() {
         toDoServiceImpl.deleteAllToDos();
 
         verify(toDoRepository).deleteAll();

@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.ToDoList2.ToDoList2.entity.ToDo;
 import com.ToDoList2.ToDoList2.exception.ResourceNotFoundException;
 import com.ToDoList2.ToDoList2.service.ToDoService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(ToDoController.class)
@@ -53,7 +52,7 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testGetAllToDos() throws JsonProcessingException, Exception {
+    void testGetAllToDos() throws Exception {
         List<ToDo> allToDos = new ArrayList<>();
         allToDos.add(toDo);
         
@@ -67,7 +66,7 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testGetToDoById() throws JsonProcessingException, Exception {
+    void testGetToDoById() throws Exception {
         when(toDoService.getToDoById(1)).thenReturn(toDo);
 
         mockMvc.perform(get("/ToDo/v2/1"))
@@ -78,7 +77,7 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testGetToDoByIdNull() throws JsonProcessingException, Exception {
+    void testGetToDoByIdNull() throws Exception {
         when(toDoService.getToDoById(1))
             .thenThrow(new ResourceNotFoundException("ToDo not found"));
         
@@ -90,7 +89,7 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testCreateToDo() throws JsonProcessingException, Exception {
+    void testCreateToDo() throws Exception {
         when(toDoService.createToDo(toDo)).thenReturn(toDo);
 
         mockMvc.perform(post("/ToDo/v2")
@@ -103,7 +102,7 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testUpdateToDo() throws JsonProcessingException, Exception {
+    void testUpdateToDo() throws Exception {
         toDo.setCompleted(true);
 
         when(toDoService.updateToDo(1, toDo)).thenReturn(toDo);
@@ -118,7 +117,7 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testUpdateToDoNotFound() throws JsonProcessingException, Exception {
+    void testUpdateToDoNotFound() throws Exception {
         toDo.setId(1234);
 
         when(toDoService.updateToDo(1, toDo))
@@ -134,7 +133,7 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testDeleteToDo() throws JsonProcessingException, Exception {
+    void testDeleteToDo() throws Exception {
         when(toDoService.deleteToDo(1)).thenReturn(toDo);
 
         mockMvc.perform(delete("/ToDo/v2/1"))
@@ -145,7 +144,7 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testDeleteToDoNotFound() throws JsonProcessingException, Exception {
+    void testDeleteToDoNotFound() throws Exception {
         toDo.setId(1231241231);
 
         when(toDoService.deleteToDo(1))
@@ -159,7 +158,7 @@ public class ToDoControllerTest {
     }
 
     @Test
-    public void testDeleteAllToDos() throws JsonProcessingException, Exception {
+    void testDeleteAllToDos() throws Exception {
         mockMvc.perform(delete("/ToDo/v2"))
             .andExpect(status().isNoContent());
     }

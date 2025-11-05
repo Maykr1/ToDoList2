@@ -1,15 +1,22 @@
 pipeline {
+    // --- SETUP ---
     agent any
+    options { timestamps() }
+    tools { maven 'maven-3.9.11' }
 
     environment {
-        NEXUS           = credentials('nexus-deploy')
-        NEXUS_BASE      = 'https://nexus.ethansclark.com'
-        RELEASE_REPO    = "${NEXUS_BASE}/repository/maven-releases/"
-        SNAPSHOT_REPO   = "${NEXUS_BASE}/repository/maven-snapshots/" 
-    }
+        // --- APP ---
+        APP_NAME = "todolist2"
+        BUILD_TAG = "${env.BUILD_NUMBER}"
 
-    options {
-        timestamps()
+        // --- MAVEN ---
+        NEXUS           = credentials('nexus-deploy')
+        NEXUS_BASE      = "https://nexus.ethansclark.com"
+        RELEASE_REPO    = "${NEXUS_BASE}/repository/maven-releases/"
+        SNAPSHOT_REPO   = "${NEXUS_BASE}/repository/maven-snapshots/"
+
+        // --- DOCKER ---
+        DOCKER_BASE     = "localhost:8003"
     }
 
     stages {
@@ -21,15 +28,13 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'chmod +x mvnw || true'
-                sh './mvnw -B test'
+                sh 'mvn -B clean test'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'chmod +x mvnw || true'
-                sh './mvnw -B clean package -DskipTests'
+                sh 'mvn -B -DskipTests package'
             }
         }
 
@@ -37,14 +42,12 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonar-local') {
                     withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                        sh """
-                        ./mvnw -B -Pwith-coverage \
-                            -Dsonar.projectKey=todolist2 \
-                            -Dsonar.projectName="todolist2" \
-                            -Dsonar.token=$SONAR_TOKEN \
-                            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                            test sonar:sonar
-                        """
+                        sh '''
+                            mvn -B -ntp sonar:sonar \
+                                -Dsonar.projectKey=$APP_NAME \
+                                -Dsonar.projectName="$APP_NAME" \
+                                -Dsonar.token=$SONAR_TOKEN \
+                            '''
                     }
                 }
 
@@ -56,21 +59,40 @@ pipeline {
 
         stage('Containerize') {
             steps {
-                sh '''
-                ./mvnw -B -ntp -DskipTests deploy \
-                    -DaltReleaseDeploymentRepository=nexus-releases::${RELEASE_REPO} \
-                    -DaltSnapshotDeploymentRepository=nexus-snapshots::${SNAPSHOT_REPO}
-                '''
+                withCredentials([usernamePassword(credentialsId: 'nexus-deploy', usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
+                    sh '''
+                        echo "[INFO] Deploying JAR to Nexus Maven..."
+                        mvn -B -ntp -DskipTests deploy \
+                            -DaltReleaseDeploymentRepository=nexus-releases::default::$RELEASE_REPO \
+                            -DaltSnapshotDeploymentRepository=nexus-snapshots::default::$SNAPSHOT_REPO
+
+                        echo "[INFO] Building Docker Image..."
+                        IMAGE="${DOCKER_BASE}/$APP_NAME:$BUILD_TAG"
+
+                        docker build \
+                            --build-arg JAR_FILE=target/ToDoList2-0.0.1-SNAPSHOT.jar \
+                            -t "$IMAGE" .
+                        docker tag "$IMAGE" "${DOCKER_BASE}/${APP_NAME}:latest"
+
+                        echo "[INFO] Pushing Docker image to Nexus Docker..."
+                        echo "${DOCKER_PSW}" | docker login "${DOCKER_BASE}" -u "$DOCKER_USR" --password-stdin
+                        docker push "$IMAGE"
+                        docker push "${DOCKER_BASE}/$APP_NAME:latest"
+                        docker logout "${DOCKER_BASE}"
+
+                        echo "[INFO] Pushed: ${IMAGE}"
+                        '''
+                }
             }
         }
     }
 
     post {
-        success {
-            echo 'Build complete ✅'
+        success { 
+            echo 'Build complete ✅' 
         }
-        failure {
-            echo 'Build failed ❌'
+        failure { 
+            echo 'Build failed ❌' 
         }
     }
 }
