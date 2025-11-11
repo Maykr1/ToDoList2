@@ -17,7 +17,7 @@ pipeline {
     }
 
     parameters{
-        choice(name: 'CLEANUP',
+        choice(name: 'PRUNE_MODE',
             choices: ['none', 'dangling', 'all'],
             description: 'Choose how aggressively to prune docker containers, volumes, etc.'
         )
