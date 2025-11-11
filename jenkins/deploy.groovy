@@ -13,7 +13,7 @@ pipeline {
         IMAGE_TAG       = 'latest'
         IMAGE           = "${DOCKER_REG}/${APP_NAME}:${IMAGE_TAG}"
         REG_CRED_ID     = 'nexus-deploy'
-        PRUNE_MODE = "${params.PRUNE_MODE ?: 'none'}"
+        PRUNE_MODE      = "${params.PRUNE_MODE ?: 'none'}"
     }
 
     parameters{
