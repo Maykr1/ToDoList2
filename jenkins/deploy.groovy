@@ -47,7 +47,7 @@ pipeline {
         }
 
         stage('Cleanup') {
-            when { expression { return params.PRUNE_MODE != 'none' } }
+            when { expression { env.PRUNE_MODE != 'none' } }
             steps {
                 sh '''
                     echo "[INFO] Prune mode: ${PRUNE_MODE}"
@@ -58,6 +58,8 @@ pipeline {
                         docker image prune -f
                         docker container prune -f
                         docker network prune -f
+                    else 
+                        echo "[INFO] Nothing to prune."
                     fi
                 '''
             }
