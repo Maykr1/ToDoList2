@@ -2,6 +2,9 @@ spring:
     application:
         name: ToDoList2
     
+    profiles:
+        active: ${ACTIVE_PROFILE:local}
+    
     datasource:
         url: ${DB_CONNECT_URL}
         username: ${DB_USERNAME}
