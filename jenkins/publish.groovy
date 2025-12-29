@@ -13,8 +13,8 @@ pipeline {
         // --- MAVEN ---
         NEXUS               = credentials('nexus-deploy')
         NEXUS_BASE          = "https://nexus.ethansclark.com"
-        SNAPSHOT_REPO_ID    = "maven-snapshots"
-        SNAPSHOT_REPO       = "${NEXUS_BASE}/repository/${SNAPSHOT_REPO_ID}/"
+        RELEASE_REPO_ID     = "maven-releases"
+        RELEASE_REPO        = "${NEXUS_BASE}/repository/${RELEASE_REPO_ID}/"
 
         // --- DOCKER ---
         DOCKER_BASE         = "localhost:8003"
@@ -45,14 +45,14 @@ pipeline {
             }
         }
 
-        stage('Publish Snapshot') {
+        stage('Publish Release') {
             steps {
                 script {
-                    env.SNAPSHOT_VERSION = getSnapshotVersion()
+                    env.RELEASE_VERSION = getReleaseVersion('maven')
                 }
 
-                setVersion('maven', env.SNAPSHOT_VERSION)
-                containerizeApp('maven', APP_NAME, SNAPSHOT_REPO, DOCKER_BASE, env.COMMIT_ID) // env.COMMIT_ID is set inside of getSnapshotVersion()
+                setVersion('maven', env.RELEASE_VERSION)
+                containerizeApp('maven', APP_NAME, RELEASE_REPO, DOCKER_BASE, env.RELEASE_VERSION)
             }
         }
     }

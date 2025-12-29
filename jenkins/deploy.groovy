@@ -1,22 +1,32 @@
+@Library('shared-jenkins-library') _
+
 pipeline {
     agent any
     options { timestamps() }
 
     environment {
         // --- APP ---
-        APP_NAME        = 'todolist2'
+        APP_NAME        = "todolist2"
+        ACTIVE_PROFILE  = "docker"
 
         // --- DOCKER ---
         COMPOSE_DIR     = '/deploy'
         DOCKER_REG      = 'localhost:8003'
         DOCKER_REPO     = 'repository/docker-apps'
-        IMAGE_TAG       = 'latest'
+
+        IMAGE_TAG       = "${params.COMMIT_ID ?: 'latest'}"
         IMAGE           = "${DOCKER_REG}/${APP_NAME}:${IMAGE_TAG}"
+
         REG_CRED_ID     = 'nexus-deploy'
         PRUNE_MODE      = "${params.PRUNE_MODE ?: 'none'}"
     }
 
-    parameters{
+    parameters {
+        string(
+            name: 'COMMIT_ID',
+            defaultValue: 'latest',
+            description: 'Git commit ID to deploy (branch, tag, or sha)'
+        )
         choice(name: 'PRUNE_MODE',
             choices: ['none', 'dangling', 'all'],
             description: 'Choose how aggressively to prune docker containers, volumes, etc.'
@@ -24,53 +34,34 @@ pipeline {
     }
 
     stages {
-        stage('Login to Registry') {
+        stage("Pull Secrets") {
             steps {
-                withCredentials([usernamePassword(credentialsId: env.REG_CRED_ID, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
-                    sh '''
-                        echo "[INFO] Logging into Docker registry ${DOCKER_REG}..."
-                        echo "${DOCKER_PSW}" | docker login "${DOCKER_REG}" -u "${DOCKER_USR}" --password-stdin
-                    '''
-                }
+                pullSecrets(env.APP_NAME)
             }
         }
 
-        stage('Deploy latest image') {
+        stage('Login to Registry') {
             steps {
-                sh '''
-                    echo "[INFO] Deploying ${IMAGE}"
+                login(env.REG_CRED_ID, env.DOCKER_REG)
+            }
+        }
 
-                    cd "${COMPOSE_DIR}"
-                    TSP_TAG="${IMAGE_TAG}" docker compose pull ${APP_NAME}
-                    TSP_TAG="${IMAGE_TAG}" docker compose up -d --no-build --remove-orphans ${APP_NAME}
-                '''
+        stage('Deploy Image') {
+            steps {
+                deployApp(env.IMAGE, env.COMPOSE_DIR, env.IMAGE_TAG, env.APP_NAME)
             }
         }
 
         stage('Cleanup') {
             when { expression { env.PRUNE_MODE != 'none' } }
             steps {
-                sh '''
-                    echo "[INFO] Prune mode: ${PRUNE_MODE}"
-
-                    if [ "${PRUNE_MODE}" = "all" ]; then
-                        docker system prune -a
-                    elif [ "${PRUNE_MODE}" = "dangling" ]; then
-                        docker image prune -f
-                        docker container prune -f
-                        docker network prune -f
-                    else 
-                        echo "[INFO] Nothing to prune."
-                    fi
-                '''
+                cleanupServer(env.PRUNE_MODE)
             }
         }
 
         stage('Logout') {
-            steps{
-                sh '''
-                    docker logout "${DOCKER_REG}" || true
-                '''
+            steps {
+                logout(env.DOCKER_REG)
             }
         }
         
@@ -78,11 +69,11 @@ pipeline {
 
     post {
         success { 
-            echo "✅ Successfully deployed latest ${APP_NAME} image" 
+            echo "✅ Successfully deployed ${APP_NAME}:${env.IMAGE_TAG} image" 
         }
 
         failure { 
-            echo "❌ Deployment failed for ${APP_NAME}" 
+            echo "❌ Deployment failed for ${APP_NAME}:${env.IMAGE_TAG} image" 
         }
     }
 }
